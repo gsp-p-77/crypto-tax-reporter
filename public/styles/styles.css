@@ -1,0 +1,23 @@
+html,
+body {
+  height: 100%;
+}
+
+body{
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+
+main,footer,header {
+  /* flex: 1 0 auto; */
+ font-family: "Zalando Sans";  
+  text-align: center;
+  /*padding: 5vmin;*/
+  /* flex: 1 0 auto;*/
+}
+
+h1 {
+  text-align: center;
+}
