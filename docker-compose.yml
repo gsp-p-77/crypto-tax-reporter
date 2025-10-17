@@ -5,8 +5,9 @@ services:
     ports:
       - "${APP_PORT:-3000}:3000"   # 👈 Uses env var or defaults to 3000
     volumes:
-      - .:/app
+      - ./data:/app/data
     environment:
       - NODE_ENV=production
       - PORT=3000                  # internal container port (Express app listens here)
     restart: unless-stopped
+
