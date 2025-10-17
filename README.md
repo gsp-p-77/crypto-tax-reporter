@@ -25,12 +25,26 @@ This web application needs the following setup on your server
 - install required packages with npm install
 - start application with npm start or for debugging with nodemon index.js
 
-Afterwards the web application, if hosted locally, is available in your browser here:
+Afterwards the web application is available in your browser here for trying out:
 localhost:3000
 
 The web application stores all date in a JSON file below ./data/ in transactions.json
 
 The rest should be self explaining.
 
+This setup should be used for trying out. For real usage, hosting it on a server with a docker enginge is recommended (see below)
+To host it on a real server
 Have fun!
+
+## Hosting with docker
+
+Just build the container stack and run it with docker compose:
+``docker compose up --build``
+
+Attention: The application has currently no authentication features. So do NOT host it in the internet! Otherwise all the world can see your entered transactions and can add new ones.
+
+It is planned to extend this application with security features, to ensure authentification first.
+
+So only host this in your private intranet and make sure nobody in your network misuses it.
+
  
