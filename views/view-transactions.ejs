@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Transactions - Crypto Tax Reporter</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/styles.css">
+</head>
+
+<body>
+  <!-- ✅ Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Crypto Tax Reporter</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="/transactions">View Transactions</a></li>
+          <li class="nav-item"><a class="nav-link" href="/buy-btc-strike">Buy BTC with Strike</a></li>
+          <li class="nav-item"><a class="nav-link" href="/export">Create PDF Export</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ✅ Transactions Table -->
+  <div class="container">
+    <h2 class="text-center mb-4">Transaction History</h2>
+
+    <% if (data && data.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Type</th>
+              <th scope="col">Amount (BTC)</th>
+              <th scope="col">Price per BTC (EUR)</th>
+              <th scope="col">Order Price (EUR)</th>
+              <th scope="col">Fee (EUR)</th>
+              <th scope="col">Wallet</th>
+              <th scope="col">Tx ID</th>
+              <th scope="col">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% data.forEach(tx => { %>
+              <tr>
+                <td><%= tx.date || '-' %></td>
+                <td><%= tx.type || '-' %></td>
+                <td><%= tx.amount?.toFixed(8) || '-' %></td>
+                <td><%= tx.pricePerBtc?.toFixed(2) || '-' %></td>
+                <td><%= tx.priceOrder?.toFixed(2) || '-' %></td>
+                <td><%= tx.fee?.toFixed(2) || '-' %></td>
+                <td><%= tx.wallet_address || '-' %></td>
+                <td><%= tx.tx_hash || '-' %></td>
+                <td><%= tx.comments || '' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info text-center">
+        No transactions found yet.
+      </div>
+    <% } %>
+
+    <div class="text-center mt-4">
+      <a href="/buy-btc-strike" class="btn btn-primary">Add New Transaction: Buy BTC with Strike</a>
+    </div>
+  </div>
+
+  <!-- ✅ Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-4">
+    <p>&copy; 2025 Crypto Tax Reporter. Author: Gero Sparwald. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -10,12 +10,24 @@ body{
 }
 
 
-main,footer,header {
-  /* flex: 1 0 auto; */
- font-family: "Zalando Sans";  
-  text-align: center;
+main,footer,header, form {
+  flex: 1 0 auto;
+  font-family: "Zalando Sans";  
+  text-align: center; 
+   
   /*padding: 5vmin;*/
   /* flex: 1 0 auto;*/
+}
+#feature-list {
+  text-align: left;
+}
+
+main, form
+{
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 5%;
+  
 }
 
 h1 {

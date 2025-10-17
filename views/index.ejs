@@ -25,14 +25,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/load-json">Load JSON</a>
-          <li class="nav-item">
-          <li class="nav-item">
-            <a class="nav-link" href="/save-json">Save JSON</a>
           <li class="nav-item">            
             <a class="nav-link" href="/transactions">View Transactions</a>
           </li>
+          <li class="nav-item">            
+            <a class="nav-link" href="/buy-btc-strike">Buy bitcoin with Strike</a>
+          </li>          
           <li class="nav-item">
             <a class="nav-link" href="/export">Create PDF Export</a>
           </li>
@@ -43,14 +41,29 @@
 
   <main class="container mt-4">
     <div>
-      <h1>Crypto Tax Reporter: Main page</h1>
+      <h1>Introduction</h1>
       <p>Do you need support with taxes, required for crypto profits in Germany?</p>
-      <p>This tool helps you to create a tax report for your crypto transactions. It supports CSV exports from Strike.</p>
-    </div>
-    <div>
-      <h3>Remarks</h3>
-      <p>This tool does not use any cloud data base at the moment.</p>
-      <p>All data is stored locally on your computer and can be imported/exported to JSON.</p> 
+      <p>This tool helps you to create a tax report for your crypto transactions.</p>
+    </div>    
+
+
+    <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="feature-list">
+      <h3>Supported features</h3>
+      <p>
+          <ul>
+            <li>Add transactions
+              <ul>
+                <li>Buy BTC on Strike wallet</li>
+                <li>Transfer BTCs from Strike to Cold wallet (to be implemented)</li>
+                <li>Transfer BTCs from cold wallet back to Strike</li>
+                <li>Sell BTC from Strike wallet</li>            
+              </ul>
+            </li>           
+            <li>View transactions</li>
+            <li>Generate PDF export</li>
+          </ul> 
+
+      </p>
     </div>
   </main>    
 
