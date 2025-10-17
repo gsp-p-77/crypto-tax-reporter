@@ -1,8 +1,11 @@
 import express from "express";
 import { readFile, writeFile } from 'fs/promises';
+import { existsSync, mkdirSync } from "fs";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from "uuid";
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,12 +17,38 @@ const dataPath = path.join(__dirname, 'data', 'transactions.json');
 app.use(express.urlencoded({ extended: true })); // important for POST form parsing
 app.use(express.json()); // optional if you want JSON bodies
 
+// Ensure the /data directory exists
+if (!existsSync(path.join(__dirname, 'data'))) {
+  mkdirSync(path.join(__dirname, 'data'));
+  console.log("📁 Created missing data directory");
+}
+
+// Ensure transactions.json exists
+if (!existsSync(dataPath)) {
+  await writeFile(dataPath, JSON.stringify([], null, 2));
+  console.log("✅ Created new transactions.json file");
+}
+
 async function loadData() {
-  const data = await readFile(dataPath, 'utf8');
-  return JSON.parse(data);
+  try {
+    // If file doesn’t exist → create it empty
+    if (!existsSync(dataPath)) {
+      await writeFile(dataPath, JSON.stringify([], null, 2));
+      console.log("✅ Created new transactions.json");
+      return [];
+    }
+
+    const data = await readFile(dataPath, "utf8");
+    return JSON.parse(data || "[]");
+  } catch (err) {
+    console.warn("⚠️ Could not read transactions.json:", err.message);
+    return [];
+  }
 }
 
 const PORT = process.env.PORT || 3000;
+
+
 
 app.use(express.static("public"));
 
