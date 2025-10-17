@@ -1,4 +1,4 @@
-# GSwPersonalWebPage
+# Crypto tax reporter
 Crypto tax reporter
 
 ## Introduction
