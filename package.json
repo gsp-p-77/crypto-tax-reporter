@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^1.20.2",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "express-session": "^1.18.2",
     "nodemon": "^3.1.10",
     "pdfkit": "^0.17.2",
     "uuid": "^13.0.0"
