@@ -407,6 +407,50 @@ app.post("/buy-btc-strike", requireLogin, async (req, res) => {
   }
 });
 
+app.get("/sell-btc-strike", requireLogin, (req, res) => {
+  res.render("sell-btc-strike.ejs");
+});
+
+app.post("/sell-btc-strike", requireLogin, async (req, res) => {
+  console.log("[POST] /sell-btc-strike");
+  console.log("Received form data:", req.body);
+
+  const transaction = {
+    id: uuidv4(),
+    type: "Sell with Strike",
+    date: req.body.date,
+    amount: parseFloat(req.body.amount),
+    pricePerBtc: parseFloat(req.body.pricePerBtc),
+    priceOrder: parseFloat(req.body.priceOrder),
+    comments: req.body.comments || "",
+    fee:
+      parseFloat(req.body.amount) * parseFloat(req.body.pricePerBtc) -
+      parseFloat(req.body.priceOrder),      
+    crypto_currency: "BTC",
+    tx_hash: req.body.transactionId || null,
+    wallet_address: "Strike",
+    order_of_use: "FIFO",
+  };
+
+  try {
+    let transactions = [];
+    try {
+      const fileData = await readFile(dataPath, "utf8");
+      transactions = JSON.parse(fileData || "[]");
+    } catch (err) {
+      console.warn("No existing transactions file found:", err.message);
+    }
+
+    transactions.push(transaction);
+    await writeFile(dataPath, JSON.stringify(transactions, null, 2));
+
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error saving transaction:", error);
+    res.status(500).send("Server error saving transaction");
+  }
+});
+
 // --- Tax Export ---
 app.get("/export/tax/:year", requireLogin, async (req, res) => {
   const year = parseInt(req.params.year);

@@ -18,43 +18,43 @@
 
   <!-- ✅ FORM -->
   <!-- add method & action! -->
-  <form method="POST" action="/buy-btc-strike" class="my-4">
+  <form method="POST" action="/sell-btc-strike" class="my-4">
     <div class="card container text-center" style="max-width: 22rem;">
       <div class="card-body">
         <h5 class="card-title">Erfasse Transkation</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Transaktion: Getätigter BTC Kauf auf strike.io</h6>
+        <h6 class="card-subtitle mb-2 text-body-secondary">Transaktion: Getätigter BTC Verkauf auf strike.io</h6>
 
         <!-- ❌ <p> shouldn’t wrap block elements like <div> -->
         <!-- ✅ just remove the <p> wrapper -->
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikeDate" class="form-label">Kaufdatum und Zeit</label>
-          <input type="datetime-local" class="form-control" id="idbuyBtcStrikeDate" name="date" required>
+          <label for="sellBtcStrikeDate" class="form-label">Verkaufsdatum und Zeit</label>
+          <input type="datetime-local" class="form-control" id="idSellBtcStrikeDate" name="date" required>
         </div>
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikeAmount" class="form-label">BTC Menge</label>
-          <input type="number" step="0.00000001" class="form-control" id="idbuyBtcStrikeAmount" name="amount" required>
+          <label for="sellBtcStrikeAmount" class="form-label">BTC Menge</label>
+          <input type="number" step="0.00000001" class="form-control" id="idSellBtcStrikeAmount" name="amount" required>
         </div>
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikePriceBtc" class="form-label">Preis pro BTC (EUR)</label>
-          <input type="number" step="0.01" class="form-control" id="idbuyBtcStrikePriceBtc" name="pricePerBtc" required>
+          <label for="sellBtcStrikePriceBtc" class="form-label">Preis pro BTC (EUR)</label>
+          <input type="number" step="0.01" class="form-control" id="idSellBtcStrikePriceBtc" name="pricePerBtc" required>
         </div>
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikePriceOrder" class="form-label">Bruttobetrag des BTC Kaufs inklusive Gebühren (EUR)</label>
-          <input type="number" step="0.01" class="form-control" id="idbuyBtcStrikePriceOrder" name="priceOrder" required>
+          <label for="sellBtcStrikePriceOrder" class="form-label">Bruttobetrag des BTC Verkaufs inklusive Gebühren (EUR)</label>
+          <input type="number" step="0.01" class="form-control" id="idSellBtcStrikePriceOrder" name="priceOrder" required>
         </div>
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikeTransactionID" class="form-label">Transaktions ID auf Strike</label>
-          <input type="text" step="0.01" class="form-control" id="idbuyBtcStrikeTransactionID" name="transactionId" required>
+          <label for="sellBtcStrikeTransactionID" class="form-label">Transaktions ID auf Strike</label>
+          <input type="text" step="0.01" class="form-control" id="idSellBtcStrikeTransactionID" name="transactionId" required>
         </div>        
         <div class="mb-3 text-start">
-          <label for="buyBtcStrikeComments" class="form-label">Kommentare zum Kauf</label>
+          <label for="buyBtcStrikeComments" class="form-label">Kommentare zum Verkauf</label>
           <textarea
             class="form-control overflow-auto"
             id="buyBtcStrikeComments"
             name="comments"
             rows="3"
             style="max-height: 150px; resize: vertical;"
-          >Cash Betrag wurde vorher von eigenem Girokonto auf Strike Wallet überwiesen zum Kauf von BTC.</textarea>
+          >Cash Betrag aus Verkauf wurde auf Strike Wallet als Eingang verbucht.</textarea>
         </div>
 
         <!-- ✅ buttons -->
