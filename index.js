@@ -5,6 +5,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit";
+import session from "express-session";
+import bcrypt from "bcrypt";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +14,66 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const dataPath = path.join(__dirname, "data", "transactions.json");
 const PORT = process.env.PORT || 3000;
+
+// ====== 🔐 AUTH CONFIG ======
+const USERNAME = process.env.APP_USERNAME || "admin";
+const PASSWORD = process.env.APP_PASSWORD || "changeme123";
+const SESSION_SECRET = process.env.SESSION_SECRET || "supergeheim123"
+
+// Passwort beim Start hashen
+const PASSWORD_HASH = await bcrypt.hash(PASSWORD, 10);
+
+// --- Login-Versuchslimits (IP-basiert)
+const loginAttempts = new Map(); // speichert { ip: { count, lockUntil } }
+const MAX_ATTEMPTS = 3;
+const LOCK_TIME_MINUTES = 60; //60 Minuten
+const LOCK_TIME_MS = LOCK_TIME_MINUTES * 60 * 1000;
+
+// --- Session middleware
+app.use(
+  session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// --- Middleware to protect routes
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+
+function isLocked(ip) {
+  const record = loginAttempts.get(ip);
+  if (!record) return false;
+
+  if (record.lockUntil && record.lockUntil > Date.now()) {
+    return true; // noch gesperrt
+  }
+
+  // Falls Sperre abgelaufen, Eintrag zurücksetzen
+  if (record.lockUntil && record.lockUntil <= Date.now()) {
+    loginAttempts.delete(ip);
+  }
+  return false;
+}
+
+function registerFailedAttempt(ip) {
+  const record = loginAttempts.get(ip) || { count: 0, lockUntil: null };
+  record.count += 1;
+
+  if (record.count >= MAX_ATTEMPTS) {
+    record.lockUntil = Date.now() + LOCK_TIME_MS;
+    console.warn(`🚫 Login von ${ip} gesperrt.`);
+  }
+
+  loginAttempts.set(ip, record);
+}
+
+function resetAttempts(ip) {
+  loginAttempts.delete(ip);
+}
 
 // --- parse form bodies
 app.use(express.urlencoded({ extended: true }));
@@ -203,6 +265,7 @@ async function createTaxPdf({ year, totalProfit, taxableProfit, report, allTrans
       doc.text(`Preis/BTC: ${tx.pricePerBtc}`);
       doc.text(`Gesamtbetrag: ${tx.priceOrder}`);
       doc.text(`Gebühr: ${tx.fee}`);
+      doc.text(`Transaktions ID: ${tx.tx_hash}`);
       doc.text(`Kommentar: ${tx.comments}`);
       doc.moveDown(0.5);
       doc.moveTo(40, doc.y).lineTo(550, doc.y).strokeColor("#dddddd").stroke();
@@ -243,24 +306,68 @@ async function createTaxPdf({ year, totalProfit, taxableProfit, report, allTrans
 // -----------------------------------------------------------------------------
 app.use(express.static("public"));
 
+app.get("/login", (req, res) => {
+  res.render("login.ejs", { error: null });
+});
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  const ip = req.ip; // oder req.headers["x-forwarded-for"] für Reverse Proxy
+
+  // 🔒 Sperrung prüfen
+  if (isLocked(ip)) {
+    const record = loginAttempts.get(ip);
+    const remaining = Math.ceil((record.lockUntil - Date.now()) / 1000 / 60);
+    return res.render("login.ejs", {
+      error: `❌ Zu viele Fehlversuche. Login gesperrt für ${remaining} Minuten.`,
+    });
+  }
+
+  // 🔑 Login prüfen
+  if (username === USERNAME && (await bcrypt.compare(password, PASSWORD_HASH))) {
+    req.session.user = { username };
+    resetAttempts(ip); // ✅ Erfolgreicher Login → Sperre zurücksetzen
+    return res.redirect("/");
+  }
+
+  // ❌ Fehlversuch registrieren
+  registerFailedAttempt(ip);
+
+  const record = loginAttempts.get(ip);
+  if (record.count >= MAX_ATTEMPTS) {
+    return res.render("login.ejs", {
+      error: `❌ Zu viele Fehlversuche. Login gesperrt.`,
+    });
+  } else {
+    const remaining = MAX_ATTEMPTS - record.count;
+    return res.render("login.ejs", {
+      error: `❌ Benutzername oder Passwort falsch. ${remaining} Versuche verbleiben.`,
+    });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => res.redirect("/login"));
+});
+
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-app.get("/export", (req, res) => {
+app.get("/export", requireLogin, (req, res) => {
   res.render("export.ejs");
 });
 
-app.get("/transactions", async (req, res) => {
+app.get("/transactions", requireLogin, async (req, res) => {
   const data = await loadData();
   res.render("view-transactions.ejs", { data });
 });
 
-app.get("/buy-btc-strike", (req, res) => {
+app.get("/buy-btc-strike", requireLogin, (req, res) => {
   res.render("buy-btc-strike.ejs");
 });
 
-app.post("/buy-btc-strike", async (req, res) => {
+app.post("/buy-btc-strike", requireLogin, async (req, res) => {
   console.log("[POST] /buy-btc-strike");
   console.log("Received form data:", req.body);
 
@@ -301,7 +408,7 @@ app.post("/buy-btc-strike", async (req, res) => {
 });
 
 // --- Tax Export ---
-app.get("/export/tax/:year", async (req, res) => {
+app.get("/export/tax/:year", requireLogin, async (req, res) => {
   const year = parseInt(req.params.year);
   const transactions = await loadData();
 
