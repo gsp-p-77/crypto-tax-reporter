@@ -5,6 +5,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit";
+import session from "express-session";
+import bcrypt from "bcrypt";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -203,6 +205,7 @@ async function createTaxPdf({ year, totalProfit, taxableProfit, report, allTrans
       doc.text(`Preis/BTC: ${tx.pricePerBtc}`);
       doc.text(`Gesamtbetrag: ${tx.priceOrder}`);
       doc.text(`Gebühr: ${tx.fee}`);
+      doc.text(`Transaktions ID: ${tx.tx_hash}`);
       doc.text(`Kommentar: ${tx.comments}`);
       doc.moveDown(0.5);
       doc.moveTo(40, doc.y).lineTo(550, doc.y).strokeColor("#dddddd").stroke();
