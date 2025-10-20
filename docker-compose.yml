@@ -9,5 +9,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000                  # internal container port (Express app listens here)
+      - APP_USERNAME=${APP_USERNAME}
+      - APP_PASSWORD=${APP_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      
     restart: unless-stopped
 
