@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import PDFDocument from "pdfkit";
 import session from "express-session";
 import bcrypt from "bcrypt";
+import flash from "connect-flash";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,14 @@ app.use(
     saveUninitialized: false,
   })
 );
+
+// Make flash messages available in all views
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash("success_msg");
+  res.locals.error_msg = req.flash("error_msg");
+  next();
+});
 
 // --- Middleware to protect routes
 function requireLogin(req, res, next) {
@@ -465,6 +474,25 @@ app.get("/export/tax/:year", requireLogin, async (req, res) => {
   res.setHeader("Content-Disposition", `attachment; filename=taxreport-${year}.pdf`);
   res.contentType("application/pdf");
   res.send(pdfBuffer);
+});
+
+app.post("/transactions/delete", requireLogin, async (req, res) => {
+  const selectedIds = req.body.selected;
+
+  if (!selectedIds || selectedIds.length === 0) {
+    req.flash("error_msg", "Please select at least one transaction to delete.");
+    return res.redirect("/transactions");
+  }
+
+  // If you store data in JSON:
+  const dataPath = path.join(__dirname, "data", "transactions.json");
+  const fileData = JSON.parse(await readFile(dataPath, "utf-8"));
+
+  const updatedData = fileData.filter(tx => !selectedIds.includes(tx.id));
+  await writeFile(dataPath, JSON.stringify(updatedData, null, 2));
+
+  req.flash("success_msg", `${fileData.length - updatedData.length} transaction(s) deleted successfully.`);
+  res.redirect("/transactions");
 });
 
 app.listen(PORT, () => {
