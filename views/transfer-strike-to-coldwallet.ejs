@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet"> 
+  <link rel="stylesheet" href="/styles/styles.css">
+  <!-- ✅ Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Crypto Tax Reporter</title>
+</head>
+
+<body>
+  <!-- ✅ Navbar -->
+  <%- include('partials/navbar') %>
+
+  <!-- ✅ Flash messages -->
+  <%- include('partials/flash') %>
+
+  <!-- ✅ FORM -->
+    <div class="container mt-4">
+      <h2>BTC Transfer von Strike auf Cold Wallet</h2>
+      <form action="/transfer-strike-to-cold" method="POST">
+        <div class="mb-3">
+          <label for="date" class="form-label">Datum und Uhrzeit</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            id="date"
+            name="date"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="amount" class="form-label">Menge (BTC)</label>
+          <input
+            type="number"
+            step="0.00000001"
+            class="form-control"
+            id="amount"
+            name="amount"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="networkFeeBtc" class="form-label">Netzgebühr (BTC)</label>
+          <input
+            type="number"
+            step="0.00000001"
+            class="form-control"
+            id="networkFeeBtc"
+            name="networkFeeBtc"
+            required
+          />
+          <small class="text-muted">
+            Die Netzwerkgebühr wird automatich von den transferierten BTCs abgezogen auf die Cold Wallet.
+          </small>
+        </div>
+
+        <div class="mb-3">
+          <label for="destinationAddress" class="form-label">Ziel Adresse</label>
+          <input
+            type="text"
+            class="form-control"
+            id="destinationAddress"
+            name="destinationAddress"
+            placeholder="bc1q..."
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="comments" class="form-label">Kommentar / Verwendung</label>
+          <textarea
+            class="form-control"
+            id="comments"
+            name="comments"
+            rows="3"
+            style="max-height: 150px; resize: vertical;"
+          >BTC Transfer von Strike auf Colde Wallet. Netzgebühr bezahlt in BTC.</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Transfer</button>
+        <a href="/" class="btn btn-secondary ms-2">Cancel</a>
+      </form>
+    </div>
+
+
+  <!-- ✅ Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ✅ Footer inside body -->
+  <footer class="bg-dark text-white text-center py-3 mt-4">
+    <p class="mb-0">&copy; 2025 Crypto Tax Reporter. Author: Gero Sparwald. All rights reserved.</p>
+  </footer>
+</body>
+</html>
