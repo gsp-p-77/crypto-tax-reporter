@@ -1,6 +1,5 @@
 services:
   crypto-tax-reporter:
-    image: crypto-tax-reporter:latest
     build:
       context: .
       args:
