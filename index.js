@@ -495,6 +495,53 @@ app.post("/transactions/delete", requireLogin, async (req, res) => {
   res.redirect("/transactions");
 });
 
+app.get("/transfer/strike-to-coldwallet", requireLogin, (req, res) => {
+  res.render("transfer-strike-to-coldwallet.ejs");
+});
+
+app.post("/transfer-strike-to-cold", async (req, res) => {
+  console.log("[POST] /transfer-strike-to-cold");
+  console.log("Received form data:", req.body);
+
+  const sentAmount = parseFloat(req.body.amount);
+  const feeBtc = parseFloat(req.body.networkFeeBtc || 0);
+  const receivedAmount = sentAmount - feeBtc;
+
+  const transaction = {
+    id: uuidv4(),
+    type: "Transfer Strike → Cold Wallet",
+    date: req.body.date,
+    amount: sentAmount,
+    feeBtc,
+    receivedAmount,
+    crypto_currency: "BTC",
+    from_wallet: "Strike",
+    to_wallet: "Cold Wallet",
+    address: req.body.destinationAddress || "",
+    comments: req.body.comments || "",
+    isInternalTransfer: true
+  };
+
+  try {
+    let transactions = [];
+    try {
+      const fileData = await readFile(dataPath, "utf8");
+      transactions = JSON.parse(fileData || "[]");
+    } catch {
+      console.warn("No existing transactions file found. Starting new one.");
+    }
+
+    transactions.push(transaction);
+    await writeFile(dataPath, JSON.stringify(transactions, null, 2));
+
+    console.log("✅ Transfer saved:", transaction);
+    res.redirect("/transactions");
+  } catch (error) {
+    console.error("❌ Error saving transfer:", error);
+    res.status(500).send("Server error saving transfer");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
