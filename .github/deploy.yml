@@ -1,0 +1,17 @@
+name: Deploy to Portainer
+
+on:
+  push:
+    branches:
+      - main  # trigger only when pushing to main
+
+jobs:
+  trigger-portainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Portainer via webhook
+        run: |
+          echo "Triggering Portainer redeploy..."
+          curl -X POST "$PORTAINER_WEBHOOK_URL"
+        env:
+          PORTAINER_WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
