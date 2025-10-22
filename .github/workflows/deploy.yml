@@ -1,4 +1,4 @@
-name: Build and Deploy (Restricted Mode)
+name: Build and Deploy
 
 on:
   push:
@@ -8,37 +8,17 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # === Step 1: Checkout ===
-      - name: Checkout repository
-        run: |
-          echo "Cloning repository..."
-          git clone https://github.com/${{ github.repository }} .
-          git fetch --all
-          git checkout ${{ github.ref_name }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # === Step 2: Login to GitHub Container Registry ===
-      - name: Login to GHCR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # === Step 3: Build and push Docker image ===
       - name: Build and push Docker image
-        env:
-          OWNER: ${{ github.repository_owner }}
         run: |
-          IMAGE=ghcr.io/${OWNER}/crypto-tax-reporter:latest
-          echo "Building image: $IMAGE"
-          docker build -t $IMAGE .
-          docker push $IMAGE
+          docker build -t ghcr.io/${{ github.repository_owner }}/crypto-tax-reporter:latest .
+          docker push ghcr.io/${{ github.repository_owner }}/crypto-tax-reporter:latest
 
-      # === Step 4: Trigger Portainer webhook ===
       - name: Trigger Portainer redeploy
-        env:
-          PORTAINER_WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
-        run: |
-          echo "Triggering Portainer webhook..."
-          curl -X POST "$PORTAINER_WEBHOOK_URL"
+        run: curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"
