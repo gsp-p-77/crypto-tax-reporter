@@ -1,15 +1,17 @@
 services:
   crypto-tax-reporter:
-    image: ghcr.io/gsp-p-77/crypto-tax-reporter:latest
+    build: .
+    container_name: crypto-tax-reporter
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "${APP_PORT:-3000}:3000"   # 👈 Uses env var or defaults to 3000
     volumes:
       - ./data:/app/data
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3000                  # internal container port (Express app listens here)
       - APP_USERNAME=${APP_USERNAME}
       - APP_PASSWORD=${APP_PASSWORD}
       - SESSION_SECRET=${SESSION_SECRET}
+      
     restart: unless-stopped
 
